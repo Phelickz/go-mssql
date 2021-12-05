@@ -64,10 +64,25 @@ func CredAccess() gin.HandlerFunc {
 	}
 }
 
-// var account = "abc"
-// _, err := db.ExecContext(ctx, "sp_RunMe",
-// 	sql.Named("ID", 123),
-// 	sql.Named("Account", sql.Out{Dest: &account}),
-// )
+func SetPasswordAndDeviceID() gin.HandlerFunc {
+	return func(c *gin.Context) {
 
-// sql.Named("pin", "PEN100599222817"), sql.Named("password", "12345")
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+
+		defer cancel()
+
+		pin, _ := c.GetQuery("pin")
+		password, _ := c.GetQuery("password")
+		device_id, _ := c.GetQuery("device_id")
+
+		_, err := dbInstance.ExecContext(ctx, "UpdateAccessCredentials", sql.Named("pin", pin), sql.Named("password", password), sql.Named("device_id", device_id))
+
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"Error": err})
+			c.Abort()
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Update Successful"})
+	}
+}
