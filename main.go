@@ -34,8 +34,7 @@ func main() {
 	database.ConnectDb()
 
 	//initialize routes
-	routes.AccessCredentials(router)
-	routes.PensionGistRoute(router)
+	routes.InitRoutes(router)
 
 	router.GET("/api-1", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "Success"})
