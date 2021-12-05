@@ -35,6 +35,7 @@ func main() {
 
 	//initialize routes
 	routes.AccessCredentials(router)
+	routes.PensionGistRoute(router)
 
 	router.GET("/api-1", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "Success"})

@@ -5,6 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AccessCredentials(r *gin.Engine) {
-	r.GET("/activate-pin", controllers.CredAccess())
+func PensionGistRoute(r *gin.Engine) {
+	r.GET("/pension-gists", controllers.FetchPensionGist())
 }

@@ -1,19 +1,24 @@
 package models
 
-import "database/sql"
+import (
+	// "database/sql"
+	"gopkg.in/guregu/null.v4"
+)
+
+//the null.Int is to handle null values from the database
 
 type PensionGist struct {
-	ID                  int
-	TITLE               string
-	HEADER_IMAGE        string
-	BODY_IMAGE          string
-	VIEWS               int
-	LIKES               int
-	DATE_POSTED         string
-	CONTENT             string
-	RELATED_ARTICLE_ID1 int
-	RELATED_ARTICLE_ID2 int
-	RELATED_ARTICLE_ID3 int
-	RELATED_ARTICLE_ID4 int
-	STATUS              sql.NullString
+	ID                  null.Int
+	TITLE               null.String
+	HEADER_IMAGE        null.String
+	BODY_IMAGE          null.String
+	VIEWS               null.Int
+	LIKES               null.Int
+	DATE_POSTED         null.String
+	CONTENT             null.String
+	RELATED_ARTICLE_ID1 null.Int
+	RELATED_ARTICLE_ID2 null.Int
+	RELATED_ARTICLE_ID3 null.Int
+	RELATED_ARTICLE_ID4 null.Int
+	STATUS              null.String
 }

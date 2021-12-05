@@ -3,9 +3,7 @@ package controllers
 import (
 	"context"
 	"database/sql"
-
-	// "database/sql"
-
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -19,47 +17,50 @@ var dbInstance = database.OpenDb()
 
 func CredAccess() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
+		//getting pin from query params
+		pin, _ := c.GetQuery("pin")
+		fmt.Println(pin)
+
+		if pin == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"Error": "Pin must be provided"})
+		}
+
+		//creating context
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 
 		defer cancel()
 
-		result, err := dbInstance.QueryContext(ctx, "getPensionsGist")
+		//running stored procedure
+		result, err := dbInstance.QueryContext(ctx, "GetAccessCredentials", sql.Named("pin", pin))
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err})
 			// c.Abort()
 		}
-		gists := []models.PensionGist{}
+		defer result.Close()
 
+		// creating a list of user structs
+		users := []models.User{}
+
+		//parsing
 		for result.Next() {
-			var ID int
-			var TITLE string
-			var HEADER_IMAGE string
-			var BODY_IMAGE string
-			var VIEWS int
-			var LIKES int
-			var DATE_POSTED string
-			var CONTENT string
-			var RELATED_ARTICLE_ID1 int
-			var RELATED_ARTICLE_ID2 int
-			var RELATED_ARTICLE_ID3 int
-			var RELATED_ARTICLE_ID4 int
-			var STATUS sql.NullString
-			err2 := result.Scan(&ID, &TITLE, &HEADER_IMAGE, &BODY_IMAGE, &VIEWS, &LIKES, &DATE_POSTED, &CONTENT, &RELATED_ARTICLE_ID1, &RELATED_ARTICLE_ID2, &RELATED_ARTICLE_ID3, &RELATED_ARTICLE_ID4, &STATUS)
+			var user models.User
+			err2 := result.Scan(&user.ID, &user.PIN, &user.SURNAME, &user.FIRSTNAME, &user.OTHERNAMES, &user.PASSWORD, &user.STATUS, &user.EMAIL, &user.MOBILE_PHONE, &user.DEVICE_ID)
 			if err2 != nil {
 				log.Panic(err2)
+				c.JSON(http.StatusInternalServerError, err2)
 			} else {
-				gist := models.PensionGist{ID: ID, TITLE: TITLE, HEADER_IMAGE: HEADER_IMAGE, BODY_IMAGE: BODY_IMAGE, VIEWS: VIEWS, LIKES: LIKES, DATE_POSTED: DATE_POSTED, CONTENT: CONTENT, RELATED_ARTICLE_ID1: RELATED_ARTICLE_ID1, RELATED_ARTICLE_ID2: RELATED_ARTICLE_ID2, RELATED_ARTICLE_ID3: RELATED_ARTICLE_ID3, RELATED_ARTICLE_ID4: RELATED_ARTICLE_ID4}
-				gists = append(gists, gist)
-				c.JSON(200, gists)
+				users = append(users, user)
 			}
-
-			// fmt.Println(err)
 		}
 
-		dbInstance.Close()
-		// c.JSON(http.StatusOK, result)
-
+		//checking for empty response and sending response to user
+		if len(users) < 1 {
+			c.JSON(http.StatusBadRequest, gin.H{"Error": "User does not exist on the database"})
+		} else {
+			c.JSON(http.StatusOK, users)
+		}
 	}
 }
 
