@@ -5,6 +5,11 @@ go 1.17
 require github.com/gin-gonic/gin v1.7.7
 
 require (
+	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/pkg/errors v0.8.1 // indirect
+)
+
+require (
 	github.com/denisenkom/go-mssqldb v0.11.0
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
 )
@@ -16,8 +21,9 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/joho/godotenv v1.4.0
-	github.com/json-iterator/go v1.1.9 // indirect
+	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
+	github.com/mailgun/mailgun-go/v4 v4.6.0
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
